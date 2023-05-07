@@ -1,0 +1,8 @@
+version: "3"
+services:
+  web:
+    build: .
+    container_name: html-container
+    #network_mode: "host"
+    ports:
+      - 18080:80
