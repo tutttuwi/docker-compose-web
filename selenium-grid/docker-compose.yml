@@ -1,0 +1,107 @@
+version: '3.8'
+ 
+services:
+  selenium-hub:
+    image: selenium/hub:4.0.0
+    # VNC接続用
+    # image: selenium/hub:3.141
+    ports:
+      - 4444:4444
+      - 4442:4442
+      - 4443:4443
+ 
+  node-chrome:
+    image: selenium/node-chrome:4.0.0
+    # VNC接続用
+    # image: selenium/node-chrome-debug:3.141
+    # ports:
+    #   - 5900:5900
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium-hub
+    environment:
+      - TZ=Asia/Tokyo
+      - HUB_HOST=selenium-hub
+      # hubとの接続で必要
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      # 同時実行数を増やす場合に設定を行う
+      # - SE_NODE_MAX_SESSIONS=2
+      # - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+ 
+  node-firefox:
+    image: selenium/node-firefox:4.0.0
+    # VNC接続用
+    # image: selenium/node-firefox-debug:3.141
+    # ports:
+    #   - 5901:5900
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium-hub
+    environment:
+      - TZ=Asia/Tokyo
+      - HUB_HOST=selenium-hub
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+ 
+  node-edge:
+    image: selenium/node-edge:4.0.0
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - selenium-hub
+    environment:
+      - TZ=Asia/Tokyo
+      - HUB_HOST=selenium-hub
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+ 
+ 
+  python-selenium-for-chrome:
+    build: ./app
+    image: python/selenium_chrome
+    # VNC接続用
+    # image: python/selenium_chrome:debug
+    volumes:
+      - ./app:/app
+    depends_on:
+      - selenium-hub
+    tty: true
+    environment:
+      - HUB_HOST=selenium-hub
+      - BROWSER_NAME=chrome
+    # コンテナ初回起動時にテスト実行
+    # entrypoint: ./entry_point.sh
+ 
+  python-selenium-for-firefox:
+    build: ./app
+    image: python/selenium_firefox
+    # VMC接続用
+    # image: python/selenium_firefox:debug
+    volumes:
+      - ./app:/app
+    depends_on:
+      - selenium-hub
+    tty: true
+    environment:
+      - HUB_HOST=selenium-hub
+      - BROWSER_NAME=firefox
+    # entrypoint: ./entry_point.sh
+ 
+  python-selenium-for-edge:
+    build: ./app
+    image: python/selenium_edge
+    volumes:
+      - ./app:/app
+    depends_on:
+      - selenium-hub
+    tty: true
+    environment:
+      - HUB_HOST=selenium-hub
+      - BROWSER_NAME=edge
+    # entrypoint: ./entry_point.sh

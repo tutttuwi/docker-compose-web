@@ -1,0 +1,3 @@
+selenium==4.0.0-beta-3
+# GUIで確認する時はselenium3を利用する（VNC接続用）
+# selenium
