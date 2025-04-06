@@ -3,6 +3,9 @@ services:
   web:
     build: .
     container_name: html-container
+    # todo: set your html root
+    # volumes:
+    #   - ./html:/usr/share/nginx/html
     #network_mode: "host"
     ports:
       - 18080:80
