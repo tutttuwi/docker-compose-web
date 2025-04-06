@@ -1,6 +1,8 @@
 version: "3"
 services:
   web:
+    # todo: you can use Dockerfile or image
+    # image: nginx:latest
     build: .
     container_name: html-container
     # todo: set your html root
